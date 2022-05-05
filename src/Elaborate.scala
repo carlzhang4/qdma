@@ -33,7 +33,6 @@ object elaborate extends App {
 	args(0) match{
 		case "QDMATop" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new QDMATop()),dir))
 		case "TestAXI2Reg" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new TestAXI2Reg()),dir))
-		case "TestXRam" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new TestXRam()),dir))
 		case "TLB" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new TLB()),dir))
 		case "DataBoundarySplit" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new DataBoundarySplit()),dir))
 		case "TestXQueue" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new TestXQueue()),dir))

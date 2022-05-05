@@ -41,22 +41,6 @@ class TestAXI2Reg extends Module{
 	axi2reg.io <> io
 }
 
-class t extends Bundle{
-	val data = UInt(32.W)
-}
-class TestXRam extends Module{
-	val io = IO(new Bundle{
-		val ramio = new XRamIO(new t, 1024)
-	})
-	val ram = XRam(new t, 1024)
-	ram.io <> io.ramio
-}
-
-
-
-
-
-
 class QDMA(VIVADO_VERSION:String="2020") extends RawModule{
 	
 	def getTCL(path:String = "Example: /home/foo/bar.srcs/sources_1/ip") = {
