@@ -160,20 +160,5 @@ class C2H extends Module{
 	io.count_word			:= count_send_word
 	io.count_time			:= count_time
 
-	class ila_c2h(seq:Seq[Data]) extends BaseILA(seq)
-	val mod_c2h = Module(new ila_c2h(Seq(
-		io.start_addr,
-		io.length,
-		io.pfch_tag,
-		io.tag_index,
-		count_send_word,
-		count_burst_word,
-		io.c2h_cmd.valid,
-		io.c2h_cmd.ready,
-
-		io.c2h_data.valid,
-		io.c2h_data.ready,
-	)))
-	mod_c2h.connect(clock)
 
 }

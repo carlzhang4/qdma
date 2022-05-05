@@ -34,7 +34,7 @@ class QDMATop extends RawModule{
 	val user_clk = BUFG(mmcm.io.CLKOUT0)
 	val user_rstn = mmcm.io.LOCKED
 
-	val qdma = Module(new QDMA)
+	val qdma = Module(new QDMA("2021"))
 	// qdma.getTCL("/home/amax/cj/brand_new_qdma/brand_new_qdma.srcs/sources_1/ip")
 
 	ToZero(qdma.io.reg_status)

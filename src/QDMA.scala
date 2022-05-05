@@ -7,6 +7,10 @@ import common.storage._
 import common.axi._
 import common.ToZero
 
+object ReporterQDMA extends Reporter{
+	override def MAX_NUM = 64
+}
+
 class AXIL extends AXI(
 	ADDR_WIDTH=32,
 	DATA_WIDTH=32,
@@ -53,7 +57,7 @@ class TestXRam extends Module{
 
 
 
-class QDMA() extends RawModule{
+class QDMA(VIVADO_VERSION:String="2020") extends RawModule{
 	
 	def getTCL(path:String = "Example: /home/foo/bar.srcs/sources_1/ip") = {
 		val s1 = "create_ip -name qdma -vendor xilinx.com -library ip -version 4.0 -module_name QDMABlackBox\n"
@@ -161,13 +165,13 @@ class QDMA() extends RawModule{
 	boundary_split.io.cmd_out	<> fifo_c2h_cmd.io.in
 	boundary_split.io.data_out	<> fifo_c2h_data.io.in
 
-	
+
 	val is_reset				= axil2reg.io.reg_control(14) === 1.U
 	//c2h cmd counter
 	axil2reg.io.reg_status(2)	:= record_signals(io.c2h_cmd.fire(), is_reset)
 	axil2reg.io.reg_status(3)	:= record_signals(check_c2h.io.out.fire(), is_reset)
-	axil2reg.io.reg_status(4)	:= record_signals(boundary_split.io.cmd_out.fire(), is_reset)
-	axil2reg.io.reg_status(5)	:= record_signals(tlb.io.c2h_out.fire(), is_reset)
+	axil2reg.io.reg_status(4)	:= record_signals(tlb.io.c2h_out.fire(), is_reset)
+	axil2reg.io.reg_status(5)	:= record_signals(boundary_split.io.cmd_out.fire(), is_reset)
 	axil2reg.io.reg_status(6)	:= record_signals(fifo_c2h_cmd.io.out.fire(), is_reset, io.pcie_clk)
 
 	//h2c cmd counter
@@ -183,11 +187,49 @@ class QDMA() extends RawModule{
 
 	//h2c data counter
 	axil2reg.io.reg_status(14)	:= record_signals(io.h2c_data.fire(), is_reset)
-	axil2reg.io.reg_status(15)	:= record_signals(fifo_h2c_cmd.io.in.fire(), is_reset, io.pcie_clk)
+	axil2reg.io.reg_status(15)	:= record_signals(fifo_h2c_data.io.in.fire(), is_reset, io.pcie_clk)
 
+	//valids and readys
+	ReporterQDMA.report(io.c2h_cmd.valid, "io.c2h_cmd.valid")
+	ReporterQDMA.report(io.c2h_cmd.ready, "io.c2h_cmd.ready")
+	ReporterQDMA.report(check_c2h.io.out.valid, "check_c2h.io.out.valid")
+	ReporterQDMA.report(check_c2h.io.out.ready, "check_c2h.io.out.ready")
+	ReporterQDMA.report(tlb.io.c2h_out.valid, "tlb.io.c2h_out.valid")
+	ReporterQDMA.report(tlb.io.c2h_out.ready, "tlb.io.c2h_out.ready")
+	ReporterQDMA.report(boundary_split.io.cmd_out.valid, "boundary_split.io.cmd_out.valid")
+	ReporterQDMA.report(boundary_split.io.cmd_out.ready, "boundary_split.io.cmd_out.ready")
+	ReporterQDMA.report(fifo_c2h_cmd.io.out.valid, "fifo_c2h_cmd.io.out.valid")
+	ReporterQDMA.report(fifo_c2h_cmd.io.out.ready, "fifo_c2h_cmd.io.out.ready")
 
+	ReporterQDMA.report(io.h2c_cmd.valid, "io.h2c_cmd.valid")
+	ReporterQDMA.report(io.h2c_cmd.ready, "io.h2c_cmd.ready")
+	ReporterQDMA.report(check_h2c.io.out.valid, "check_h2c.io.out.valid")
+	ReporterQDMA.report(check_h2c.io.out.ready, "check_h2c.io.out.ready")
+	ReporterQDMA.report(tlb.io.h2c_out.valid, "tlb.io.h2c_out.valid")
+	ReporterQDMA.report(tlb.io.h2c_out.ready, "tlb.io.h2c_out.ready")
+	ReporterQDMA.report(fifo_h2c_cmd.io.out.valid, "fifo_h2c_cmd.io.out.valid")
+	ReporterQDMA.report(fifo_h2c_cmd.io.out.ready, "fifo_h2c_cmd.io.out.ready")
+
+	ReporterQDMA.report(io.c2h_data.valid, "io.c2h_cmd.valid")
+	ReporterQDMA.report(io.c2h_data.ready, "io.c2h_cmd.ready")
+	ReporterQDMA.report(boundary_split.io.data_out.valid, "boundary_split.io.data_out.valid")
+	ReporterQDMA.report(boundary_split.io.data_out.ready, "boundary_split.io.data_out.ready")
+	ReporterQDMA.report(fifo_c2h_data.io.out.valid, "fifo_c2h_data.io.out.valid")
+	ReporterQDMA.report(fifo_c2h_data.io.out.ready, "fifo_c2h_data.io.out.ready")
+
+	ReporterQDMA.report(io.h2c_data.valid, "io.h2c_data.valid")
+	ReporterQDMA.report(io.h2c_data.ready, "io.h2c_data.ready")
+	ReporterQDMA.report(fifo_h2c_data.io.in.valid, "fifo_h2c_data.io.in.valid")
+	ReporterQDMA.report(fifo_h2c_data.io.in.ready, "fifo_h2c_data.io.in.ready")
 	
-	val qdma_inst = Module(new QDMABlackBox)
+	val reports = withClockAndReset(io.user_clk,!io.user_arstn)(Reg(Vec(ReporterQDMA.MAX_NUM,Bool())))
+	ReporterQDMA.get_reports(reports)
+	ReporterQDMA.print_msgs()
+
+	axil2reg.io.reg_status(16)	:= reports.asUInt()(31,0)
+	axil2reg.io.reg_status(17)	:= reports.asUInt()(63,32)
+	
+	val qdma_inst = Module(new QDMABlackBox(VIVADO_VERSION))
 	qdma_inst.io.sys_rst_n				:= perst_n
 	qdma_inst.io.sys_clk				:= pcie_ref_clk
 	qdma_inst.io.sys_clk_gt				:= pcie_ref_clk_gt
@@ -326,7 +368,9 @@ class QDMA() extends RawModule{
 	qdma_inst.io.s_axis_c2h_cmpt_ctrl_qid				:= 0.U
 	qdma_inst.io.s_axis_c2h_cmpt_ctrl_cmpt_type			:= 0.U
 	qdma_inst.io.s_axis_c2h_cmpt_ctrl_wait_pld_pkt_id	:= 0.U
-	qdma_inst.io.s_axis_c2h_cmpt_ctrl_no_wrb_marker		:= 0.U
+	if(qdma_inst.io.s_axis_c2h_cmpt_ctrl_no_wrb_marker != None){
+		qdma_inst.io.s_axis_c2h_cmpt_ctrl_no_wrb_marker.get		:= 0.U	
+	}
 	qdma_inst.io.s_axis_c2h_cmpt_ctrl_port_id			:= 0.U
 	qdma_inst.io.s_axis_c2h_cmpt_ctrl_marker			:= 0.U
 	qdma_inst.io.s_axis_c2h_cmpt_ctrl_user_trig			:= 0.U

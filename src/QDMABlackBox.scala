@@ -3,7 +3,7 @@ package qdma
 import chisel3._
 import chisel3.util._
 
-class QDMABlackBox extends BlackBox{
+class QDMABlackBox(VIVADO_VERSION:String) extends BlackBox{
 	val io = IO(new Bundle{
 		val sys_rst_n 					= Input(Bool())
 		val sys_clk 					= Input(Clock())
@@ -145,7 +145,7 @@ class QDMABlackBox extends BlackBox{
 		val s_axis_c2h_cmpt_ctrl_qid				= Input(UInt(11.W))
 		val s_axis_c2h_cmpt_ctrl_cmpt_type			= Input(UInt(2.W))
 		val s_axis_c2h_cmpt_ctrl_wait_pld_pkt_id	= Input(UInt(16.W))
-		val s_axis_c2h_cmpt_ctrl_no_wrb_marker		= Input(UInt(1.W))
+		val s_axis_c2h_cmpt_ctrl_no_wrb_marker		= if(VIVADO_VERSION=="2021") Some(Input(UInt(1.W))) else None
 		val s_axis_c2h_cmpt_ctrl_port_id			= Input(UInt(3.W))
 		val s_axis_c2h_cmpt_ctrl_marker				= Input(UInt(1.W))
 		val s_axis_c2h_cmpt_ctrl_user_trig			= Input(UInt(1.W))

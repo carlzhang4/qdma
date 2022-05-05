@@ -12,7 +12,7 @@ set_property LOC [get_package_pins -of_objects [get_bels [get_sites -filter {NAM
 set_property PACKAGE_PIN D32 [get_ports led]
 set_property IOSTANDARD  LVCMOS18 [get_ports led]
 
-#create_clock -name sys_100M_clock_0 -period 10 [get_ports sys_100M_0_p]
+create_clock -name sys_100M_clock_0 -period 10 -add [get_ports sys_100M_0_p]
 
 set_property PACKAGE_PIN BJ43 [get_ports sys_100M_0_p]
 set_property PACKAGE_PIN BJ44 [get_ports sys_100M_0_n]
@@ -25,8 +25,8 @@ set_false_path -to [get_cells -regexp {qdma/axil2reg/reg_status_[0-9]*_reg\[.*]}
 #set_false_path -from [get_cells qdma/axil2reg/reg_control_[*]]
 #set_false_path -to [get_cells qdma/axil_reg_0/reg_status_[*]]
 
-##
+###
 set_false_path -to [get_pins -hier *sync_reg[0]/D]
-##
+###
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
-connect_debug_port dbg_hub/clk [get_nets */*/APB_0_PCLK]
+connect_debug_port dbg_hub/clk [get_nets dbg_clk_pad_O]

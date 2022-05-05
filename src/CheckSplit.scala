@@ -5,6 +5,7 @@ import chisel3.util._
 import chisel3.experimental.{DataMirror, requireIsChiselType}
 import common.axi._
 import common.storage._
+import common._
 
 
 class DataBoundarySplit extends Module{
@@ -15,42 +16,45 @@ class DataBoundarySplit extends Module{
 		val cmd_out = Decoupled(new C2H_CMD)
 	})
 
-	val data_fifo = XQueue(new C2H_DATA(),512)
+	val data_fifo = XQueue(new C2H_DATA(),16)
+	val cmd_fifo = XQueue(new C2H_CMD(),16)
 	val cmd_temp = Reg(new C2H_CMD())
 	val clength = RegInit(0.U(32.W))
-	io.data_in	<> data_fifo.io.in
+	io.data_out	<> data_fifo.io.out
+	io.cmd_out	<> cmd_fifo.io.out
 
 	val sIDLE :: sREAD_DATA :: Nil 	= Enum(2)
 	val state                   	= RegInit(sIDLE)
 
-	io.cmd_in.ready 				:= (state === sIDLE) & (io.cmd_out.ready === 1.U)
-	data_fifo.io.out.ready 			:= (state === sREAD_DATA) & (io.data_out.ready === 1.U)
+	io.cmd_in.ready 				:= (state === sIDLE) & (cmd_fifo.io.in.ready === 1.U)
+	io.data_in.ready 			:= (state === sREAD_DATA) & (data_fifo.io.in.ready === 1.U)
 
-	io.data_out.valid 				:= 0.U
-	io.data_out.bits				:= 0.U.asTypeOf(io.data_out.bits)
-	io.cmd_out.valid 				:= 0.U
-	io.cmd_out.bits					:= 0.U.asTypeOf(io.cmd_out.bits)
+	data_fifo.io.in.valid 				:= 0.U
+	data_fifo.io.in.bits				:= 0.U.asTypeOf(data_fifo.io.in.bits)
+	cmd_fifo.io.in.valid 				:= 0.U
+	cmd_fifo.io.in.bits					:= 0.U.asTypeOf(cmd_fifo.io.in.bits)
 
-
+	ReporterQDMA.report(state===sIDLE, "boundary split state===sIDLE")
+	ReporterQDMA.report(state===sREAD_DATA, "boundary split state===sREAD_DATA")
 
 	switch(state){
 		is(sIDLE){
 			when(io.cmd_in.fire()){
 				cmd_temp				:= io.cmd_in.bits
                 state               	:= sREAD_DATA
-				io.cmd_out.valid		:= 1.U
-				io.cmd_out.bits 		:= io.cmd_in.bits
+				cmd_fifo.io.in.valid		:= 1.U
+				cmd_fifo.io.in.bits 		:= io.cmd_in.bits
 			}
 		}
 		is(sREAD_DATA){
-			when(data_fifo.io.out.fire()){
-                io.data_out.valid 			:= 1.U
-				io.data_out.bits 			<> data_fifo.io.out.bits 
-				io.data_out.bits.last		:= false.B
-				io.data_out.bits.ctrl_len	:= cmd_temp.len
+			when(io.data_in.fire()){
+                data_fifo.io.in.valid 			:= 1.U
+				data_fifo.io.in.bits 			<> io.data_in.bits 
+				data_fifo.io.in.bits.last		:= false.B
+				data_fifo.io.in.bits.ctrl_len	:= cmd_temp.len
 				clength						:= clength + 64.U
 				when((clength + 64.U) >= cmd_temp.len){
-					io.data_out.bits.last	:= true.B
+					data_fifo.io.in.bits.last	:= true.B
 					state					:= sIDLE
 					clength					:= 0.U
 				}
@@ -87,6 +91,12 @@ class CMDBoundaryCheck[T<:HasAddrLen](private val gen:T, page_size:Int, mini_pag
 
 	val sIDLE :: sFIRSTCMD :: sSPLIT :: sMINISPLIT :: sLASTSPLIT :: Nil 	= Enum(5)
 	val state                   	= RegInit(sIDLE)
+
+	ReporterQDMA.report(state===sIDLE, "boundary check state===sIDLE")
+	ReporterQDMA.report(state===sFIRSTCMD, "boundary check state===sFIRSTCMD")
+	ReporterQDMA.report(state===sSPLIT, "boundary check state===sSPLIT")
+	ReporterQDMA.report(state===sMINISPLIT, "boundary check state===sMINISPLIT")
+	ReporterQDMA.report(state===sLASTSPLIT, "boundary check state===sLASTSPLIT")
 
 	io.in.ready 						:= (state === sIDLE)
 

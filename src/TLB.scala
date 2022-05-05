@@ -101,39 +101,4 @@ class TLB extends Module{
 	io.c2h_out			<> q_c2h.io.deq
 
 	io.tlb_miss_count	:= tlb_miss_count
-
-	class ila_tlb(seq:Seq[Data]) extends BaseILA(seq)
-	val mod_tlb = Module(new ila_tlb(Seq(
-		tlb_miss_count,
-		h2c_miss,
-		c2h_miss,
-		h2c_outrange,
-		base_page,
-		wrtlb_index,
-		// io.wr_tlb.valid,
-		// io.wr_tlb.ready,
-		// io.wr_tlb.bits.is_base,
-		// io.wr_tlb.bits.vaddr_high,
-		// io.wr_tlb.bits.vaddr_low,
-		// io.wr_tlb.bits.paddr_high,
-		// io.wr_tlb.bits.paddr_low,
-
-		tlb_table.io.addr_a,
-		tlb_table.io.wr_en_a,
-		tlb_table.io.data_in_a,
-		tlb_table.io.data_out_a,
-		
-		tlb_table.io.addr_b,
-		tlb_table.io.data_out_b,
-
-		io.c2h_in.valid,
-		io.c2h_in.ready,
-		io.c2h_in.bits.addr,
-
-		io.c2h_out.valid,
-		io.c2h_out.ready,
-		io.c2h_out.bits.addr,
-	)))
-	mod_tlb.connect(clock)
-
 }
