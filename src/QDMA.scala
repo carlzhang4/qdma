@@ -43,8 +43,8 @@ class TestAXI2Reg extends Module{
 
 class QDMA(VIVADO_VERSION:String) extends RawModule{
 	require(VIVADO_VERSION == "202001" || VIVADO_VERSION == "202002" || VIVADO_VERSION == "202101")
-	def getTCL(path:String = "Example: /home/foo/bar.srcs/sources_1/ip") = {
-		val s1 = "create_ip -name qdma -vendor xilinx.com -library ip -version 4.0 -module_name QDMABlackBox\n"
+	def getTCL(path:String) = {
+		val s1 = "\ncreate_ip -name qdma -vendor xilinx.com -library ip -version 4.0 -module_name QDMABlackBox\n"
 		val s2 = "set_property -dict [list CONFIG.Component_Name {QDMABlackBox} CONFIG.axist_bypass_en {true} CONFIG.pcie_extended_tag {false} CONFIG.dsc_byp_mode {Descriptor_bypass_and_internal} CONFIG.cfg_mgmt_if {false} CONFIG.testname {st} CONFIG.pf0_bar4_enabled_qdma {true} CONFIG.pf0_bar4_64bit_qdma {true} CONFIG.pf0_bar4_scale_qdma {Gigabytes} CONFIG.pf0_bar4_size_qdma {1} CONFIG.pf1_bar4_enabled_qdma {true} CONFIG.pf1_bar4_64bit_qdma {true} CONFIG.pf1_bar4_scale_qdma {Gigabytes} CONFIG.pf1_bar4_size_qdma {1} CONFIG.pf2_bar4_enabled_qdma {true} CONFIG.pf2_bar4_64bit_qdma {true} CONFIG.pf2_bar4_scale_qdma {Gigabytes} CONFIG.pf2_bar4_size_qdma {1} CONFIG.pf3_bar4_enabled_qdma {true} CONFIG.pf3_bar4_64bit_qdma {true} CONFIG.pf3_bar4_scale_qdma {Gigabytes} CONFIG.pf3_bar4_size_qdma {1} CONFIG.dma_intf_sel_qdma {AXI_Stream_with_Completion} CONFIG.en_axi_mm_qdma {false}] [get_ips QDMABlackBox]\n"
 		val s3 = "generate_target {instantiation_template} [get_files %s/QDMABlackBox/QDMABlackBox.xci]\n"
 		val s4 = "update_compile_order -fileset sources_1\n"

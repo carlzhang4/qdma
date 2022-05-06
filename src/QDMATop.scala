@@ -24,6 +24,9 @@ class QDMATop extends RawModule{
 		MMCM_CLKIN1_PERIOD 		= 10
 	))
 
+	//your VIVADO version and path to your project's IP location
+	val qdma = Module(new QDMA("202101"))//edit me
+	qdma.getTCL("Path to your project/projectName.srcs/sources_1/ip")//edit me
 
 	mmcm.io.CLKIN1	:= IBUFDS(sys_100M_0_p, sys_100M_0_n)
 	mmcm.io.RST		:= 0.U
@@ -34,8 +37,6 @@ class QDMATop extends RawModule{
 	val user_clk = BUFG(mmcm.io.CLKOUT0)
 	val user_rstn = mmcm.io.LOCKED
 
-	val qdma = Module(new QDMA("202101"))
-	qdma.getTCL("Path to your project/projectName.srcs/sources_1/ip")
 
 	ToZero(qdma.io.reg_status)
 	qdma.io.pin <> qdma_pin
