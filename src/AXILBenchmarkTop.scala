@@ -2,13 +2,14 @@ package qdma
 
 import chisel3._
 import chisel3.util._
+import qdma._
 import common._
 import common.storage._
 import common.axi._
-import common.ToZero
 
-class QDMATop extends RawModule{
-	val qdma_pin		= IO(new QDMAPin())
+
+class AXILBenchmarkTop() extends RawModule {
+    val qdma_pin		= IO(new QDMAPin())
 	val led 			= IO(Output(UInt(1.W)))
 	val sys_100M_0_p	= IO(Input(Clock()))
   	val sys_100M_0_n	= IO(Input(Clock()))
@@ -71,47 +72,38 @@ class QDMATop extends RawModule{
 	//h2c
 	val control_reg = qdma.io.reg_control
 	val status_reg = qdma.io.reg_status
-	val h2c =  withClockAndReset(qdma.io.user_clk,!qdma.io.user_arstn){Module(new H2C())}
+	val h2c =  withClockAndReset(qdma.io.user_clk,!qdma.io.user_arstn){Module(new H2C_AXIL())}
 
-	h2c.io.start_addr	:= Cat(control_reg(100), control_reg(101))
-	h2c.io.length		:= control_reg(102)
-	h2c.io.offset		:= control_reg(103)
-	h2c.io.sop			:= control_reg(104)
-	h2c.io.eop			:= control_reg(105)
-	h2c.io.start		:= control_reg(106)
-	h2c.io.total_words	:= control_reg(107)
-	h2c.io.total_qs		:= control_reg(108)
-	h2c.io.total_cmds	:= control_reg(109)
-	h2c.io.range		:= control_reg(110)
-	h2c.io.range_words	:= control_reg(111)
-	h2c.io.is_seq		:= control_reg(112)
-
-	for(i <- 0 until 16){
-		h2c.io.count_word(i*32+31,i*32)	<> status_reg(102+i)
-	}
-	h2c.io.count_err	<> status_reg(100)
-	h2c.io.count_time	<> status_reg(101)
-	h2c.io.h2c_cmd		<> qdma.io.h2c_cmd
-	h2c.io.h2c_data		<> qdma.io.h2c_data
+	h2c.io.startAddress	    := Cat(control_reg(100), control_reg(101))
+	h2c.io.length		    := control_reg(102)
+	h2c.io.sop			    := control_reg(103)
+	h2c.io.eop			    := control_reg(104)
+	h2c.io.totalWords	    := control_reg(105)
+	h2c.io.totalCommands    := control_reg(106)
+    h2c.io.start		    := control_reg(110)
+    
+	h2c.io.countError	    <> status_reg(100)
+	h2c.io.countTime	    <> status_reg(101)
+    h2c.io.countWords       <> status_reg(102)
+	h2c.io.h2cCommand	    <> qdma.io.h2c_cmd
+	h2c.io.h2cData		    <> qdma.io.h2c_data
 
 	//c2h
-	val c2h = withClockAndReset(qdma.io.user_clk,!qdma.io.user_arstn){Module(new C2H())}
+	val c2h = withClockAndReset(qdma.io.user_clk,!qdma.io.user_arstn){Module(new C2H_AXIL())}
 
 	
-	c2h.io.start_addr		:= Cat(control_reg(200), control_reg(201))
-	c2h.io.length			:= control_reg(202)
-	c2h.io.offset			:= control_reg(203)
-	c2h.io.start			:= control_reg(204)
-	c2h.io.total_words		:= control_reg(205)
-	c2h.io.total_qs			:= control_reg(206)
-	c2h.io.total_cmds		:= control_reg(207)
-	c2h.io.pfch_tag			:= control_reg(209)
-	c2h.io.tag_index		:= control_reg(210)
+	c2h.io.startAddress		:= Cat(control_reg(120), control_reg(121))
+	c2h.io.length			:= control_reg(122)
+	c2h.io.totalWords		:= control_reg(123)
+	c2h.io.totalCommands	:= control_reg(124)
+	c2h.io.pfchTag			:= control_reg(125)
+    c2h.io.tagIndex         := control_reg(126)
+    c2h.io.start			:= control_reg(130)
 	
-	c2h.io.count_cmd		<> status_reg(200)
-	c2h.io.count_word		<> status_reg(201)
-	c2h.io.count_time		<> status_reg(202)
-	c2h.io.c2h_cmd			<> qdma.io.c2h_cmd
-	c2h.io.c2h_data			<> qdma.io.c2h_data
+	c2h.io.countCommand		<> status_reg(110)
+    c2h.io.countTime		<> status_reg(111)
+	c2h.io.countWords		<> status_reg(112)
+	c2h.io.c2hCommand		<> qdma.io.c2h_cmd
+	c2h.io.c2hData			<> qdma.io.c2h_data
 
 }

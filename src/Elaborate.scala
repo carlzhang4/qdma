@@ -37,6 +37,7 @@ object elaborate extends App {
 		case "DataBoundarySplit" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new DataBoundarySplit()),dir))
 		case "TestXQueue" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new TestXQueue()),dir))
 		case "TestXConverter" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new TestXConverter()),dir))
+		case "AXILBenchmarkTop" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new AXILBenchmarkTop()),dir))
 		case _ => println("Module match failed!")
 	}
 }
