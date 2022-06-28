@@ -38,6 +38,9 @@ object elaborate extends App {
 		case "TestXQueue" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new TestXQueue()),dir))
 		case "TestXConverter" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new TestXConverter()),dir))
 		case "AXILBenchmarkTop" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new AXILBenchmarkTop()),dir))
+		case "H2CRandom" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new H2CRandom()),dir))
+		case "C2HRandom" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new C2HRandom()),dir))
+		case "QDMARandomTop" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new QDMARandomTop()),dir))
 		case _ => println("Module match failed!")
 	}
 }
