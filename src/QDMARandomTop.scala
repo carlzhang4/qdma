@@ -26,7 +26,7 @@ class QDMARandomTop extends RawModule{
 
 	//your VIVADO version and path to your project's IP location
 	val qdma = Module(new QDMA("202101"))//edit me
-	qdma.getTCL("/home/amax/cj/smart_db_pro_alpha/smart_db_pro_alpha.srcs/ip")//edit me
+	qdma.getTCL()
 
 	mmcm.io.CLKIN1	:= IBUFDS(sys_100M_0_p, sys_100M_0_n)
 	mmcm.io.RST		:= 0.U

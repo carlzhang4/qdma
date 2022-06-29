@@ -27,7 +27,7 @@ class AXILBenchmarkTop() extends RawModule {
 
 	//your VIVADO version and path to your project's IP location
 	val qdma = Module(new QDMA("202101"))//edit me
-	qdma.getTCL("/home/mhy/vivado/2021_1/qdma/qdma.srcs/chisel/ip")//edit me
+	qdma.getTCL()
 
 	mmcm.io.CLKIN1	:= IBUFDS(sys_100M_0_p, sys_100M_0_n)
 	mmcm.io.RST		:= 0.U
