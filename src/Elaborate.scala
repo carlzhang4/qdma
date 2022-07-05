@@ -41,6 +41,9 @@ object elaborate extends App {
 		case "H2CRandom" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new H2CRandom()),dir))
 		case "C2HRandom" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new C2HRandom()),dir))
 		case "QDMARandomTop" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new QDMARandomTop()),dir))
+		case "H2CLatency" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new H2CLatency()),dir))
+		case "C2HLatency" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new C2HLatency()),dir))
+		case "QDMALatencyTop" => stage.execute(arr,Seq(ChiselGeneratorAnnotation(() => new QDMALatencyTop()),dir))
 		case _ => println("Module match failed!")
 	}
 }
