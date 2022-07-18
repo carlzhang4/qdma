@@ -35,7 +35,6 @@ class DataBoundarySplit extends Module{
 	cmd_fifo.io.in.bits					:= 0.U.asTypeOf(cmd_fifo.io.in.bits)
 
 	ReporterQDMA.report(state===sIDLE, "boundary split state===sIDLE")
-	ReporterQDMA.report(state===sREAD_DATA, "boundary split state===sREAD_DATA")
 
 	switch(state){
 		is(sIDLE){
@@ -93,10 +92,6 @@ class CMDBoundaryCheck[T<:HasAddrLen](private val gen:T, page_size:Int, mini_pag
 	val state                   	= RegInit(sIDLE)
 
 	ReporterQDMA.report(state===sIDLE, "boundary check state===sIDLE")
-	ReporterQDMA.report(state===sFIRSTCMD, "boundary check state===sFIRSTCMD")
-	ReporterQDMA.report(state===sSPLIT, "boundary check state===sSPLIT")
-	ReporterQDMA.report(state===sMINISPLIT, "boundary check state===sMINISPLIT")
-	ReporterQDMA.report(state===sLASTSPLIT, "boundary check state===sLASTSPLIT")
 
 	io.in.ready 						:= (state === sIDLE)
 

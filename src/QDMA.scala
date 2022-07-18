@@ -174,35 +174,15 @@ class QDMA(VIVADO_VERSION:String) extends RawModule{
 	axil2reg.io.reg_status(15)	:= record_signals(fifo_h2c_data.io.in.fire(), is_reset, io.pcie_clk)
 
 	//valids and readys
-	ReporterQDMA.report(io.c2h_cmd.valid, "io.c2h_cmd.valid")
-	ReporterQDMA.report(io.c2h_cmd.ready, "io.c2h_cmd.ready")
-	ReporterQDMA.report(check_c2h.io.out.valid, "check_c2h.io.out.valid")
-	ReporterQDMA.report(check_c2h.io.out.ready, "check_c2h.io.out.ready")
-	ReporterQDMA.report(tlb.io.c2h_out.valid, "tlb.io.c2h_out.valid")
-	ReporterQDMA.report(tlb.io.c2h_out.ready, "tlb.io.c2h_out.ready")
-	ReporterQDMA.report(boundary_split.io.cmd_out.valid, "boundary_split.io.cmd_out.valid")
-	ReporterQDMA.report(boundary_split.io.cmd_out.ready, "boundary_split.io.cmd_out.ready")
 	ReporterQDMA.report(fifo_c2h_cmd.io.out.valid, "fifo_c2h_cmd.io.out.valid")
 	ReporterQDMA.report(fifo_c2h_cmd.io.out.ready, "fifo_c2h_cmd.io.out.ready")
 
-	ReporterQDMA.report(io.h2c_cmd.valid, "io.h2c_cmd.valid")
-	ReporterQDMA.report(io.h2c_cmd.ready, "io.h2c_cmd.ready")
-	ReporterQDMA.report(check_h2c.io.out.valid, "check_h2c.io.out.valid")
-	ReporterQDMA.report(check_h2c.io.out.ready, "check_h2c.io.out.ready")
-	ReporterQDMA.report(tlb.io.h2c_out.valid, "tlb.io.h2c_out.valid")
-	ReporterQDMA.report(tlb.io.h2c_out.ready, "tlb.io.h2c_out.ready")
 	ReporterQDMA.report(fifo_h2c_cmd.io.out.valid, "fifo_h2c_cmd.io.out.valid")
 	ReporterQDMA.report(fifo_h2c_cmd.io.out.ready, "fifo_h2c_cmd.io.out.ready")
 
-	ReporterQDMA.report(io.c2h_data.valid, "io.c2h_cmd.valid")
-	ReporterQDMA.report(io.c2h_data.ready, "io.c2h_cmd.ready")
-	ReporterQDMA.report(boundary_split.io.data_out.valid, "boundary_split.io.data_out.valid")
-	ReporterQDMA.report(boundary_split.io.data_out.ready, "boundary_split.io.data_out.ready")
 	ReporterQDMA.report(fifo_c2h_data.io.out.valid, "fifo_c2h_data.io.out.valid")
 	ReporterQDMA.report(fifo_c2h_data.io.out.ready, "fifo_c2h_data.io.out.ready")
 
-	ReporterQDMA.report(io.h2c_data.valid, "io.h2c_data.valid")
-	ReporterQDMA.report(io.h2c_data.ready, "io.h2c_data.ready")
 	ReporterQDMA.report(fifo_h2c_data.io.in.valid, "fifo_h2c_data.io.in.valid")
 	ReporterQDMA.report(fifo_h2c_data.io.in.ready, "fifo_h2c_data.io.in.ready")
 	
@@ -211,7 +191,6 @@ class QDMA(VIVADO_VERSION:String) extends RawModule{
 	ReporterQDMA.print_msgs()
 
 	axil2reg.io.reg_status(16)	:= reports.asUInt()(31,0)
-	axil2reg.io.reg_status(17)	:= reports.asUInt()(63,32)
 	
 	val qdma_inst = Module(new QDMABlackBox(VIVADO_VERSION))
 	qdma_inst.io.sys_rst_n				:= perst_n

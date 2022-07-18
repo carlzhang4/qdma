@@ -39,7 +39,7 @@ class SimpleAXISlave[T<:AXI](private val gen:T)extends Module{
 	ToZero(r.bits)
 	r.bits.last	:= 1.U
 
-	val cur_data = RegInit(0.U(512.W))
+	val cur_data = RegInit(0.U(32.W))
 	when(r.fire()){
 		cur_data := cur_data + 1.U
 	}
